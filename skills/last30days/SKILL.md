@@ -620,7 +620,9 @@ fi
 # avoids the inline-single-quoted-JSON apostrophe trap (resolved context
 # strings like "people's choice" or "McDonald's" otherwise close the outer
 # single-quote and break shell parsing before the engine is even invoked).
-COMPETITORS_PLAN_FILE=$(mktemp -t last30days-competitors.XXXXXX.json)
+# Trailing XXXXXX (no .json suffix) so BSD/macOS mktemp works the same as
+# GNU; BSD only substitutes X's at the end of the template.
+COMPETITORS_PLAN_FILE=$(mktemp "${TMPDIR:-/tmp}/last30days-competitors.XXXXXX")
 trap 'rm -f "$COMPETITORS_PLAN_FILE"' EXIT
 cat > "$COMPETITORS_PLAN_FILE" <<'PLAN_EOF'
 {
@@ -960,8 +962,10 @@ fi
 # Write QUERY_PLAN_JSON to a tmpfile before the engine invocation above.
 # parse_plan() reads file paths transparently; this avoids inline-JSON
 # shell-quoting hazards (apostrophes in search_query / ranking_query
-# strings break single-quoted command-line JSON).
-QUERY_PLAN_FILE=$(mktemp -t last30days-plan.XXXXXX.json)
+# strings break single-quoted command-line JSON). Trailing XXXXXX (no
+# .json suffix) for BSD/macOS portability — BSD mktemp only substitutes
+# X's at the end of the template.
+QUERY_PLAN_FILE=$(mktemp "${TMPDIR:-/tmp}/last30days-plan.XXXXXX")
 trap 'rm -f "$QUERY_PLAN_FILE"' EXIT
 cat > "$QUERY_PLAN_FILE" <<'PLAN_EOF'
 {QUERY_PLAN_JSON_FROM_STEP_0.75}
